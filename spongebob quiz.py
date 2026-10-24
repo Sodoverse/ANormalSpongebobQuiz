@@ -26,7 +26,7 @@ else:
 
 answer = input("3. Who is Spongebob's best friend?: ")
     
-if answer.lower() == "patrick star":
+if answer.lower() == "patrick":
     print("Correct!")
     score = score + 1
     print(f"Your score = {score}")
@@ -35,12 +35,13 @@ else:
     score = score - 100
     print(f"Your score = {score}")
           
-answer = input("4. What kind of animal is Gary!?")
+answer = input("4. What kind of animal is Gary!?: ")
 
 if answer.lower() == "snail":
     print("Correct! You win!")
     score = score + 1
     print(f"Your score = {score}")
+    webbrowser.open("https://danbooru.donmai.us/posts/10507578")
 else:
     print("Yo, nigga. Get the fuck out of my game. In fact, go use this shit, right now.")
     webbrowser.open("https://sodoverse.github.io/Pornhub-Roulette-/")
