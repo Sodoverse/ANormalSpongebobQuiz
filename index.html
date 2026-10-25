@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpongeBob Quiz</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #00bfff;
+            color: #17324d;
+            text-align: center;
+            padding: 30px 15px;
+        }
+
+        .quiz {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 5px 15px #00608066;
+        }
+
+        h1 { color: #e9a900; }
+
+        button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: #ffcf33;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover { background: #ffb800; }
+        button:disabled { cursor: default; opacity: 0.65; }
+        #feedback { font-weight: bold; min-height: 24px; }
+    </style>
+</head>
+
+<body>
+    <div class="quiz">
+        <h1>🧽 SpongeBob Quiz!</h1>
+        <p id="progress">Question 1 of 4</p>
+        <h2 id="question"></h2>
+        <div id="answers"></div>
+        <p id="feedback" aria-live="polite"></p>
+        <h3 id="score">Score: 0</h3>
+        <button id="next" hidden>Next Question</button>
+        <button id="restart" hidden>Play Again</button>
+    </div>
+
+    <script>
+        // Customize these destination URLs.
+        const WIN_URL = "https://example.com";
+        const LOSE_URL = "https://example.org";
+
+        const questions = [
+            {
+                question: "Where does SpongeBob work?",
+                answers: [
+                    "Krusty Krab",
+                    "Chum Bucket",
+                    "Jellyfish Fields"
+                ],
+                correct: "Krusty Krab"
+            },
+            {
+                question: "How big is Spongebob's dick?",
+                answers: [
+                    "Two inches",
+                    "Four inches",
+                    "Seven inches"
+                ],
+                correct: "Two inches"
+            },
+            {
+                question: "Who is SpongeBob's best friend?",
+                answers: [
+                    "Squidward",
+                    "Patrick",
+                    "Mr. Krabs"
+                ],
+                correct: "Patrick",
+                penalty: true
+            },
+            {
+                question: "What kind of animal is Gary?",
+                answers: ["Crab", "Snail", "Octopus"],
+                correct: "Snail"
+            }
+        ];
+
+        let current = 0;
+        let score = 0;
+        let answered = false;
+
+        const questionEl = document.getElementById("question");
+        const answersEl = document.getElementById("answers");
+        const feedbackEl = document.getElementById("feedback");
+        const scoreEl = document.getElementById("score");
+        const progressEl = document.getElementById("progress");
+        const nextBtn = document.getElementById("next");
+        const restartBtn = document.getElementById("restart");
+
+        function showQuestion() {
+            answered = false;
+            const q = questions[current];
+
+            progressEl.textContent =
+                `Question ${current + 1} of ${questions.length}`;
+            questionEl.textContent = q.question;
+            answersEl.replaceChildren();
+            feedbackEl.textContent = "";
+            scoreEl.textContent = `Score: ${score}`;
+            nextBtn.hidden = true;
+            restartBtn.hidden = true;
+
+            q.answers.forEach(answer => {
+                const btn = document.createElement("button");
+                btn.textContent = answer;
+                btn.addEventListener("click", () => checkAnswer(answer));
+                answersEl.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(answer) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[current];
+
+            if (answer.toLowerCase() === q.correct.toLowerCase()) {
+                score++;
+                feedbackEl.textContent = "Correct! 🎉";
+            } else if (q.penalty) {
+                score -= 100;
+                feedbackEl.textContent =
+                    "IT'S PATRICK! That's a -100 point penalty! 😭";
+            } else {
+                feedbackEl.textContent =
+                    `Nope! The correct answer was ${q.correct}!`;
+            }
+
+            scoreEl.textContent = `Score: ${score}`;
+
+            Array.from(answersEl.children).forEach(btn => {
+                btn.disabled = true;
+            });
+
+            if (current < questions.length - 1) {
+                nextBtn.hidden = false;
+                return;
+            }
+
+            // Final results and redirect.
+            questionEl.textContent = "Quiz complete!";
+            progressEl.textContent = "Finished!";
+            answersEl.replaceChildren();
+            nextBtn.hidden = true;
+            restartBtn.hidden = false;
+
+            // Winning means getting every question right.
+            // The -100 Patrick penalty makes this a real challenge!
+            if (score === questions.length) {
+                feedbackEl.textContent =
+                    `YOU WIN! Final score: ${score}. Redirecting...`;
+
+                setTimeout(() => {
+                    window.location.href = WIN_URL;
+                }, 2500);
+            } else {
+                feedbackEl.textContent =
+                    `YOU LOST! Final score: ${score}. Redirecting...`;
+
+                setTimeout(() => {
+                    window.location.href = LOSE_URL;
+                }, 2500);
+            }
+        }
+
+        nextBtn.addEventListener("click", () => {
+            current++;
+            showQuestion();
+        });
+
+        restartBtn.addEventListener("click", () => {
+            current = 0;
+            score = 0;
+            showQuestion();
+        });
+
+        showQuestion();
+    </script>
+</body>
+</html>
